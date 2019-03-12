@@ -1,0 +1,555 @@
+---
+title: "lab_7"
+author: "The Pham"
+date: "October 23, 2017"
+output: word_document
+---
+
+#1
+#Complete
+
+#2
+#Complete
+
+
+#3
+#a and b
+#Size every cluster for number of clusters = 2,3,4,5,7,9,11 in that order
+```{r echo=FALSE, warning=FALSE}
+#1
+#Complete
+
+#2
+#Complete
+
+#3
+#a and b
+#scale only for kmeans and hac. Not for dbscan
+
+iris<-iris
+# iris_copy <- scale(subset(iris, select=c(1:4)))
+iris_copy <- subset(iris, select=c(1:4))
+result<-list()
+for (i in 1:11){
+  result[[i]]<-kmeans(iris_copy,i)
+}
+
+#Size of clusters
+for (i in 1:11){
+assign(paste("size",i,sep=""),result[[i]]$size)
+}
+#size of clusters when n of clusters =2
+size2
+#size of clusters when n of clusters =3
+size3
+#size of clusters when n of clusters =4
+size4
+#size of clusters when n of clusters =5
+size5
+#size of clusters when n of clusters =7
+size7
+#size of clusters when n of clusters =9
+size9
+#size of clusters when n of clusters =11
+size11
+
+#find a, b, c, d
+#assign(paste("cluster",i,sep=""),as.vector(result[[i]]$cluster))
+
+
+cluster.result<-list()
+for (i in 1:11){
+  
+  cluster.result[[i]]<-as.vector(result[[i]]$cluster)
+}
+
+a<-function(cluster){
+  if (is.null(cluster)==T){
+    return(1)
+  }else{
+a<-0
+for(i in 1:nrow(iris)){
+  for (j in 1:nrow(iris)){
+    if (cluster[i]==cluster[j] & iris$Species[i]==iris$Species[j]){
+      a<-a+1
+    }
+  }
+}
+  if(a>=1){
+    a<-a-1
+  }else{
+    a<-a
+  }
+return(a)
+}
+}
+
+b<-function(cluster){
+  if (is.null(cluster)==T){
+    return(1)
+  }else{
+  a<-0
+  for(i in 1:nrow(iris)){
+    for (j in 1:nrow(iris)){
+      if (cluster[i]!=cluster[j] & iris$Species[i]!=iris$Species[j]){
+        a<-a+1
+      }
+    }
+  }
+  if(a>=1){
+    a<-a-1
+  }else{
+    a<-a
+  }
+  return(a)
+}
+}
+c<-function(cluster){
+  if (is.null(cluster)==T){
+    return(1)
+  }else{
+  a<-0
+  for(i in 1:nrow(iris)){
+    for (j in 1:nrow(iris)){
+      if (cluster[i]==cluster[j] & iris$Species[i]!=iris$Species[j]){
+        a<-a+1
+      }
+    }
+  }
+  if(a>=1){
+    a<-a-1
+  }else{
+    a<-a
+  }
+  return(a)
+}
+}
+d<-function(cluster){
+  if (is.null(cluster)==T){
+    return(1)
+  }else{
+  a<-0
+  for(i in 1:nrow(iris)){
+    for (j in 1:nrow(iris)){
+      if (cluster[i]!=cluster[j] & iris$Species[i]==iris$Species[j]){
+        a<-a+1
+      }
+    }
+  }
+  if(a>=1){
+    a<-a-1
+  }else{
+    a<-a
+  }
+  return(a)
+}
+}
+a.list<-list()
+b.list<-list()
+c.list<-list()
+d.list<-list()
+
+for (i in 1:11){
+  a.list[[i]]<-a(cluster.result[[i]])
+  b.list[[i]]<-b(cluster.result[[i]])
+  c.list[[i]]<-c(cluster.result[[i]])
+  d.list[[i]]<-d(cluster.result[[i]])
+}
+
+for (i in 1:11){
+  assign(
+    paste("f",i,sep=""),
+    (2*(a.list[[i]]/(a.list[[i]]+c.list[[i]]))*
+       (a.list[[i]]/(a.list[[i]]+d.list[[i]])))/
+      (a.list[[i]]/(a.list[[i]]+c.list[[i]])+a.list[[i]]/(a.list[[i]]+d.list[[i]])))
+}
+```
+
+#C
+#Values of the F-measures for clusters=2,3,4,5,7,9,11 in that order.
+```{r echo=F}
+#Values of the F measures
+l<-list(f2,f3,f4,f5,f7,f9,f11)
+#F measure for number of clusters = 2
+f2
+#F measure for number of clusters = 3
+f3
+#F measure for number of clusters = 4
+f4
+#F measure for number of clusters = 5
+f5
+#F measure for number of clusters = 7
+f7
+#F measure for number of clusters = 9
+f9
+#F measure for number of clusters = 11
+f11
+```
+#k=3 gives the highest F measure
+#This is the value of the highest F-measure
+
+
+```{r echo=FALSE, warning=FALSE}
+# c
+
+f3
+#k=3 gives the highest F measure
+#The number of clusters in the target is 3, while the optimal number of clusters using this
+# kmeans method is also 3, as this number for k gives us the highest F measure.
+#So the algorithm arrived at the target's number of clusters.
+
+```
+#d
+#The number of clusters in the target is 3, while the optimal number of clusters using this
+# kmeans method is also 3, as this number for k gives us the highest F measure.
+#So the algorithm arrived at the target's number of clusters.
+
+*** 
+
+#4
+#a complete
+#HAC report, including the heights of the distance and the dendrogram
+```{r echo=F, warning=F}
+iris_dist <- dist(iris_copy)
+
+new<-hclust(iris_dist)
+# new[[2]]
+plot(new)
+x<-rect.hclust(new,k=3)
+
+writeLines(as.character(x[[1]]),"a.txt")
+writeLines(as.character(x[[2]]),"b1.txt")
+writeLines(as.character(x[[3]]),"b2.txt")
+
+```
+#b
+#judging from the plot of dendrogram, 3 clusters seem to be a reasonable threshold.
+#The reason is that the heights are close together until after the number of clusters
+#gets to 4, then between 4 and 3 there is a jump. The data points also seem to cluster itself
+#into 2 main groups and within the right group the data partitions itself into 2
+#. Therefore, 3 clusters seem reasonable.
+
+#c
+#cluster size and composition for each cluster with kmeans for cluster 1,2,3
+```{r echo=FALSE, warning=FALSE}
+
+a1<-t(read.table("a.txt"))
+b1<-t(read.table("b1.txt"))
+b2<-t(read.table("b2.txt"))
+
+hac1<-as.vector(a1)
+hac2<-as.vector(b1)
+hac3<-as.vector(b2)
+#b
+#judging from the plot of dendrogram, 3 clusters seem to be a reasonable threshold.
+#The reason is that the heights are close together until after the number of clusters
+#gets to 4, then between 4 and 3 there is a jump. The data points also seem to cluster itself
+#into 2 main groups and within the right group the data partitions itself into 2
+#. Therefore, 3 clusters seem reasonable.
+
+
+#cluster number and composition for each cluster with kmeans for cluster 1,2,3
+#c
+
+x<-as.vector(result[[3]]$cluster)
+kmeans<-as.factor(x)
+
+library(car)
+iris2<-cbind(iris,kmeans)
+
+hac<-cbind(hac1,1)
+hac.2<-cbind(hac2,2)
+hac.3<-cbind(hac3,3)
+hac<-rbind(hac,hac.2,hac.3)
+
+hac <- hac[order(hac[,1]),]
+hac.factor<-as.factor(hac[,2])
+iris3<-cbind(iris2,hac.factor)
+#cluster number and composition for each cluster with kmeans for cluster 1,2,3
+kmeans1<-which(x==1)
+```
+#composition and number of data points for cluster 1
+```{r echo=F}
+kmeans1
+length(kmeans1)
+```
+#composition and number of data points for cluster 2
+```{r echo=F}
+#composition and number of data points for cluster 2
+kmeans2<-which(x==2)
+kmeans2
+length(kmeans2)
+```
+#composition and number of data points for cluster 3
+```{r echo=F}
+kmeans3<-which(x==3)
+kmeans3
+length(kmeans3)
+```
+
+
+#cluster number and composition with HAC for cluster 1,2,3
+
+
+#composition and number of data points for cluster 1
+```{r echo=FALSE, warning=FALSE}
+length(hac1)
+hac1
+```
+#composition and number of data points for cluster 2
+```{r echo=FALSE, warning=FALSE}
+length(hac2)
+hac2
+```
+
+#composition and number of data points for cluster 3
+```{r echo=FALSE, warning=FALSE}
+length(hac3)
+hac3
+```
+#The number of data points in each cluster is fairly different between the
+#2 methods for all 3 clusters.The composition of each cluster is fairly similar for both methods.
+#The differences can be noted on the 2 graphs above
+
+```{r echo=FALSE, warning=FALSE}
+library(car)
+scatterplot(Sepal.Length~Sepal.Width|kmeans,data=iris3,smoother=NULL,reg.line=NULL,main="   kmeans")
+scatterplot(Sepal.Length~Sepal.Width|hac.factor,data=iris3,smoother=NULL,reg.line=NULL,main="   HAC")
+
+```
+#The number of data points in each cluster is fairly different between the
+#2 methods for all 3 clusters.The composition of each cluster is fairly similar for both methods.
+#The differences can be noted on the 2 graphs above
+***
+#5
+#a complete
+```{r echo=FALSE, warning=FALSE}
+#5
+#a
+
+library(dbscan)
+iris_mat<- as.matrix(iris_copy)
+iris_mat_result<-list()
+
+e <- ".2,.3,.4,.5,.6,.8,1"
+writeLines(e,"esp.txt")
+eps<-as.vector(t(read.table("esp.txt",sep=",")))
+for (i in 1:length(eps)) {
+  iris_mat_result[[i]] <- dbscan(iris_mat, eps = eps[i])
+}
+```
+#b
+```{r echo=FALSE, warning=FALSE}
+#b
+#Size of clusters
+#Count number of clusters for each differing epsilon value
+null<-numeric()
+for (i in 1:7){
+  null[i]<-length(which(iris_mat_result[[i]]$cluster==0))
+}
+#which(null==0)
+#For epsilon =1, there is no noise data point
+n<-numeric()
+for (i in 1:7){
+  n[i]<-length(unique(iris_mat_result[[i]]$cluster))
+}
+#Number of clusters for epsilon = 0.2, 0.3, 0.4, 0.5, 0.6, 0.8 or 1
+#n-1
+#Note: for epsilon=1, the number of clusters is 2 instead of 1
+#size of clusters for differing epsilon values
+```
+#size of clusters for differing epsilon values
+#epsilon = .2
+```{r echo=FALSE}
+#epsilon = .2
+length(which(iris_mat_result[[1]]$cluster==1))
+length(which(iris_mat_result[[1]]$cluster==2))
+```
+#epsilon = .3
+```{r echo=F}
+#epsilon = .3
+length(which(iris_mat_result[[2]]$cluster==1))
+length(which(iris_mat_result[[2]]$cluster==2))
+length(which(iris_mat_result[[2]]$cluster==3))
+```
+#epsilon = .4
+```{r echo=F}
+#epsilon = .4
+length(which(iris_mat_result[[3]]$cluster==1))
+length(which(iris_mat_result[[3]]$cluster==2))
+length(which(iris_mat_result[[3]]$cluster==3))
+length(which(iris_mat_result[[3]]$cluster==4))
+```
+#epsilon = .5
+```{r echo=F}
+#epsilon = .5
+length(which(iris_mat_result[[4]]$cluster==1))
+length(which(iris_mat_result[[4]]$cluster==2))
+```
+#epsilon = .6
+```{r echo=F}
+#epsilon = .6
+length(which(iris_mat_result[[5]]$cluster==1))
+length(which(iris_mat_result[[5]]$cluster==2))
+```
+#epsilon = .8
+```{r echo=F}
+#epsilon = .8
+length(which(iris_mat_result[[6]]$cluster==1))
+length(which(iris_mat_result[[6]]$cluster==2))
+```
+#epsilon = 1
+```{r echo=F}
+#epsilon = 1
+length(which(iris_mat_result[[7]]$cluster==1))
+length(which(iris_mat_result[[7]]$cluster==2))
+```
+```{r echo=F, warning=F}
+cluster.result2<-list()
+for (i in 1:7){
+  cluster.result2[[i]]<-as.numeric(iris_mat_result[[i]]$cluster)
+}
+
+a.list2<-list()
+b.list2<-list()
+c.list2<-list()
+d.list2<-list()
+for (i in 1:7){
+  a.list2[[i]]<-a(cluster.result2[[i]])
+  b.list2[[i]]<-b(cluster.result2[[i]])
+  c.list2[[i]]<-c(cluster.result2[[i]])
+  d.list2[[i]]<-d(cluster.result2[[i]])
+}
+
+for (i in 1:7){
+  assign(
+    paste("f_mat",i,sep=""),
+    (2*(a.list2[[i]]/(a.list2[[i]]+c.list2[[i]]))*
+       (a.list2[[i]]/(a.list2[[i]]+d.list2[[i]])))/
+      (a.list2[[i]]/(a.list2[[i]]+c.list2[[i]])+a.list2[[i]]/(a.list2[[i]]+d.list2[[i]])))
+}
+```
+#F-measure for epsilon = .2, .3, .4, .5, .6, .8, 1 in that order. The last value is the highest F-measure
+
+```{r echo=F}
+
+#The F-measures
+#F-measure for epsilon = .2
+f_mat1
+#F-measure for epsilon = .3
+f_mat2
+#F-measure for epsilon = .4
+f_mat3
+#F-measure for epsilon = .5
+f_mat4
+#F-measure for epsilon = .6
+f_mat5
+#F-measure for epsilon = .8
+f_mat6
+#F-measure for epsilon = 1
+f_mat7
+#c
+l2<-list(f_mat1,f_mat2,f_mat3,f_mat4,f_mat5,f_mat6,f_mat7)
+#which.max(l2)
+f_mat7
+#F-measure is greatest for epsilon = 1
+```
+#c
+#F-measure is greatest for epsilon = 1
+
+#d
+#When epsilon =1, there is no more noise in the clustering. It appears that as epsilon increases,
+#the amount of noise data points decreases. The F-measure is also the greatest when epsilon=1.
+
+```{r echo=F, warning=F, results='hide'}
+
+
+#e
+#cluster composition for each cluster with kmeans
+kmeans1<-which(x==1)
+
+#composition and number of data points for cluster 1
+kmeans1
+length(kmeans1)
+#composition and number of data points for cluster 2
+kmeans2<-which(x==2)
+kmeans2
+length(kmeans2)
+#composition and number of data points for cluster 3
+kmeans3<-which(x==3)
+kmeans3
+length(kmeans3)
+
+#cluster composition with HAC
+#composition and number of data points for cluster 1
+
+length(hac1)
+hac1
+#composition and number of data points for cluster 2
+
+length(hac2)
+hac2
+#composition and number of data points for cluster 3
+
+length(hac3)
+hac3
+```
+
+
+#Cluster composition with dbscan
+
+#There are only 2 clusters
+#Size and composition of data points for cluster 1 and 2
+#Size and composition of data points for cluster 1
+```{r echo=F, warning=F}
+which(iris_mat_result[[7]]$cluster==1)
+length(which(iris_mat_result[[7]]$cluster==1))
+```
+#Size and composition of data points for cluster 2
+```{r echo=FALSE, warning=FALSE}
+which(iris_mat_result[[7]]$cluster==2)
+length(which(iris_mat_result[[7]]$cluster==2))
+```
+#dbscan method produces a clustering with only 2 clusters, different from kmeans or hac method.
+#The number of data points in each cluster is fairly different amongst the
+#3 methods. It is rather difficult to compare the composition of clusters in dbscan method with the
+#other two methods because they don't have the same number of clusters.
+
+#6
+```{r echo=F, warning=F, error=F}
+#6
+swiss<-swiss
+swiss_copy <- scale(swiss)
+swiss_dist <- dist(swiss_copy)
+fit<-hclust(swiss_dist)
+plot(fit)
+x2<-rect.hclust(fit,k=2)
+writeLines(as.character(x2[[1]]),"catholic.txt")
+writeLines(as.character(x2[[2]]),"protestant.txt")
+hacswiss1<-as.vector(t(read.table("catholic.txt")))
+hacswiss2<-as.vector(t(read.table("protestant.txt")))
+
+hacswiss<-cbind(hacswiss1,1)
+hacswiss.2<-cbind(hacswiss2,2)
+hacswiss<-rbind(hacswiss,hacswiss.2)
+hacswiss <- hacswiss[order(hacswiss[,1]),]
+hac.factor<-as.factor(hacswiss[,2])
+swiss<-cbind(swiss,hac.factor)
+```
+```{r echo=F, warning=F}
+library(car)
+scatterplot(Catholic~Examination|hac.factor,data=swiss,smoother=NULL,reg.line=NULL,main="HAC")
+```
+
+#Catholic-predominant cities
+```{r echo=F}
+
+rownames(swiss[hacswiss1,])
+```
+#Protestant-predominant cities
+```{r echo=F}
+#Protestant-predominant cities
+rownames(swiss[hacswiss2,])
+
+```
+
